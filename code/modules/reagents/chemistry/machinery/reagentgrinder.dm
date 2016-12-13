@@ -70,6 +70,9 @@
 				/obj/item/weapon/reagent_containers/food/snacks/grown/berries/poison = list("poisonberryjuice" = 0),
 				/obj/item/weapon/reagent_containers/food/snacks/grown/pumpkin = list("pumpkinjuice" = 0),
 				/obj/item/weapon/reagent_containers/food/snacks/grown/blumpkin = list("blumpkinjuice" = 0),
+				/obj/item/weapon/reagent_containers/food/snacks/grown/apple = list("applejuice" = 0),
+				/obj/item/weapon/reagent_containers/food/snacks/grown/grapes = list("grapejuice" = 0),
+				/obj/item/weapon/reagent_containers/food/snacks/grown/grapes/green = list("grapejuice" = 0),
 		)
 
 		var/list/dried_items = list(
@@ -158,7 +161,7 @@
 				return 1
 
 		if (!is_type_in_list(I, blend_items) && !is_type_in_list(I, juice_items))
-				if(user.a_intent == "harm")
+				if(user.a_intent == INTENT_HARM)
 						return ..()
 				else
 						user << "<span class='warning'>Cannot refine into a reagent!</span>"

@@ -138,7 +138,6 @@
 /obj/structure/chair/comfy/New()
 	armrest = image("icons/obj/chairs.dmi", "comfychair_armrest")
 	armrest.layer = ABOVE_MOB_LAYER
-
 	return ..()
 
 /obj/structure/chair/comfy/post_buckle_mob(mob/living/M)
@@ -212,7 +211,7 @@
 	icon = 'icons/obj/chairs.dmi'
 	icon_state = "chair_toppled"
 	item_state = "chair"
-	w_class = 5
+	w_class = WEIGHT_CLASS_HUGE
 	force = 8
 	throwforce = 10
 	throw_range = 3

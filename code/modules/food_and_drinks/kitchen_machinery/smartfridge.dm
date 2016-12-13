@@ -33,6 +33,7 @@
 /obj/item/weapon/circuitboard/machine/smartfridge/New(loc, new_type)
 	if(new_type)
 		build_path = new_type
+	..()
 
 /obj/item/weapon/circuitboard/machine/smartfridge/attackby(obj/item/I, mob/user, params)
 	if(istype(I, /obj/item/weapon/screwdriver))
@@ -124,7 +125,7 @@
 				user << "<span class='warning'>There is nothing in [O] to put in [src]!</span>"
 				return 0
 
-	if(user.a_intent != "harm")
+	if(user.a_intent != INTENT_HARM)
 		user << "<span class='warning'>\The [src] smartly refuses [O].</span>"
 		updateUsrDialog()
 		return 0
@@ -302,6 +303,8 @@
 		var/obj/item/weapon/reagent_containers/food/snacks/S = O
 		if(S.dried_type)
 			return 1
+	if(istype(O,/obj/item/stack/sheet/wetleather/))
+		return 1
 	return 0
 
 /obj/machinery/smartfridge/drying_rack/proc/toggle_drying(forceoff = 0)
@@ -316,13 +319,18 @@
 /obj/machinery/smartfridge/drying_rack/proc/rack_dry()
 	for(var/obj/item/weapon/reagent_containers/food/snacks/S in contents)
 		if(S.dried_type == S.type)//if the dried type is the same as the object's type, don't bother creating a whole new item...
-			S.color = "#ad7257"
+			S.add_atom_colour("#ad7257", FIXED_COLOUR_PRIORITY)
 			S.dry = 1
 			S.loc = get_turf(src)
 		else
 			var/dried = S.dried_type
 			new dried(src.loc)
 			qdel(S)
+		return 1
+	for(var/obj/item/stack/sheet/wetleather/WL in contents)
+		var/obj/item/stack/sheet/leather/L = new(loc)
+		L.amount = WL.amount
+		qdel(WL)
 		return 1
 	return 0
 

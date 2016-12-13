@@ -116,9 +116,6 @@ By design, d1 is the smallest direction and d2 is the highest
 	else
 		icon_state = "[d1]-[d2]"
 
-//Telekinesis has no effect on a cable
-/obj/structure/cable/attack_tk(mob/user)
-	return
 
 // Items usable on a cable :
 //   - Wirecutters : cut it duh !
@@ -190,9 +187,9 @@ By design, d1 is the smallest direction and d2 is the highest
 		if("white")
 			icon = 'icons/obj/power_cond/power_cond_white.dmi'
 
-/obj/structure/cable/proc/update_stored(var/length = 1, var/color = "red")
+/obj/structure/cable/proc/update_stored(length = 1, colorC = "red")
 	stored.amount = length
-	stored.item_color = color
+	stored.item_color = colorC
 	stored.update_icon()
 
 ////////////////////////////////////////////
@@ -456,7 +453,7 @@ var/global/list/datum/stack_recipe/cable_coil_recipes = list ( \
 	item_color = "red"
 	desc = "A coil of insulated power cable."
 	throwforce = 0
-	w_class = 2
+	w_class = WEIGHT_CLASS_SMALL
 	throw_speed = 3
 	throw_range = 5
 	materials = list(MAT_METAL=10, MAT_GLASS=5)

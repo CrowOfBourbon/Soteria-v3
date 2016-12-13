@@ -11,7 +11,6 @@
 	var/hardness = 40 //lower numbers are harder. Used to determine the probability of a hulk smashing through.
 	var/slicing_duration = 100  //default time taken to slice the wall
 	var/sheet_type = /obj/item/stack/sheet/metal
-	var/obj/item/stack/sheet/builtin_sheet = null
 
 	canSmoothWith = list(
 	/turf/closed/wall,
@@ -23,10 +22,6 @@
 	/turf/closed/wall/r_wall/rust,
 	/turf/closed/wall/clockwork)
 	smooth = SMOOTH_TRUE
-
-/turf/closed/wall/New()
-	..()
-	builtin_sheet = new sheet_type
 
 /turf/closed/wall/attack_tk()
 	return
@@ -48,13 +43,13 @@
 	ChangeTurf(/turf/open/floor/plating)
 
 /turf/closed/wall/proc/break_wall()
+	var/obj/item/stack/sheet/builtin_sheet = new sheet_type(src)
 	builtin_sheet.amount = 2
-	builtin_sheet.loc = src
 	return (new /obj/structure/girder(src))
 
 /turf/closed/wall/proc/devastate_wall()
+	var/obj/item/stack/sheet/builtin_sheet = new sheet_type(src)
 	builtin_sheet.amount = 2
-	builtin_sheet.loc = src
 	new /obj/item/stack/sheet/metal(src)
 
 /turf/closed/wall/ex_act(severity, target)
@@ -87,7 +82,7 @@
 	switch(M.damtype)
 		if(BRUTE)
 			playsound(src, 'sound/weapons/punch4.ogg', 50, 1)
-			visible_message("<span class='danger'>[M.name] has hit [src]!</span>", null, null, COMBAT_MESSAGE_RANGE, M.occupant)
+			visible_message("<span class='danger'>[M.name] has hit [src]!</span>", null, null, COMBAT_MESSAGE_RANGE)
 			if(prob(hardness + M.force) && M.force > 20)
 				dismantle_wall(1)
 				playsound(src, 'sound/effects/meteorimpact.ogg', 100, 1)
@@ -178,7 +173,7 @@
 		if( WT.remove_fuel(0,user) )
 			user << "<span class='notice'>You begin slicing through the outer plating...</span>"
 			playsound(src, W.usesound, 100, 1)
-			if(do_after(user, slicing_duration/W.toolspeed, target = src))
+			if(do_after(user, slicing_duration*W.toolspeed, target = src))
 				if(!iswallturf(src) || !user || !WT || !WT.isOn() || !T)
 					return 1
 				if( user.loc == T && user.get_active_held_item() == WT )
@@ -256,16 +251,17 @@
 		ChangeTurf(/turf/closed/wall/mineral/cult)
 
 /turf/closed/wall/ratvar_act(force)
-	var/converted = (prob(40) || force)
-	if(converted)
+	. = ..()
+	if(.)
 		ChangeTurf(/turf/closed/wall/clockwork)
-	for(var/I in src)
-		var/atom/A = I
-		if(ismob(A) || converted)
-			A.ratvar_act()
 
 /turf/closed/wall/storage_contents_dump_act(obj/item/weapon/storage/src_object, mob/user)
 	return 0
+
+/turf/closed/wall/acid_act(acidpwr, acid_volume)
+	if(explosion_block >= 2)
+		acidpwr = min(acidpwr, 50) //we reduce the power so strong walls never get melted.
+	. = ..()
 
 /turf/closed/wall/acid_melt()
 	dismantle_wall(1)

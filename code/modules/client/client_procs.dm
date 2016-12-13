@@ -97,7 +97,7 @@ var/next_external_rsc = 0
 
 
 /client/New(TopicData)
-
+	var/tdata = TopicData //save this for later use
 	TopicData = null							//Prevent calls to client.Topic from connect
 
 	if(connection != "seeker" && connection != "web")//Invalid connection type.
@@ -136,7 +136,7 @@ var/next_external_rsc = 0
 		admins |= src
 		holder.owner = src
 
-	//preferences datum - also holds some persistant data for the client (because we may as well keep these datums to a minimum)
+	//preferences datum - also holds some persistent data for the client (because we may as well keep these datums to a minimum)
 	prefs = preferences_datums[ckey]
 	if(!prefs)
 		prefs = new /datum/preferences(src)
@@ -167,7 +167,7 @@ var/next_external_rsc = 0
 		src << "Required version to remove this message: [config.client_warn_version] or later"
 		src << "Visit http://www.byond.com/download/ to get the latest version of byond."
 
-	if (connection == "web")
+	if (connection == "web" && !holder)
 		if (!config.allowwebclient)
 			src << "Web client is disabled"
 			qdel(src)
@@ -196,6 +196,10 @@ var/next_external_rsc = 0
 			log_access("Failed Login: [key] - New account attempting to connect during panic bunker")
 			message_admins("<span class='adminnotice'>Failed Login: [key] - New account attempting to connect during panic bunker</span>")
 			src << "Sorry but the server is currently not accepting connections from never before seen players."
+			if(config.allow_panic_bunker_bounce && tdata != "redirect")
+				src << "<span class='notice'>Sending you to [config.panic_server_name].</span>"
+				winset(src, null, "command=.options")
+				src << link("[global.panic_address]?redirect")
 			qdel(src)
 			return 0
 
@@ -212,7 +216,7 @@ var/next_external_rsc = 0
 	if(!IsGuestKey(key) && dbcon.IsConnected())
 		findJoinDate()
 
-	sync_client_with_db()
+	sync_client_with_db(tdata)
 
 	check_ip_intel()
 
@@ -285,7 +289,7 @@ var/next_external_rsc = 0
 	player_age = -1
 
 
-/client/proc/sync_client_with_db()
+/client/proc/sync_client_with_db(connectiontopic)
 	if (IsGuestKey(src.key))
 		return
 
@@ -311,11 +315,12 @@ var/next_external_rsc = 0
 	if (src.holder && src.holder.rank)
 		admin_rank = src.holder.rank.name
 	else
-		if (check_randomizer())
+		if (check_randomizer(connectiontopic))
 			return
 
 	var/watchreason = check_watchlist(sql_ckey)
 	if(watchreason)
+		current_watchlist[sql_ckey] = watchreason
 		message_admins("<font color='red'><B>Notice: </B></font><font color='blue'>[key_name_admin(src)] is on the watchlist and has just connected - Reason: [watchreason]</font>")
 		send2irc_adminless_only("Watchlist", "[key_name(src)] is on the watchlist and has just connected - Reason: [watchreason]")
 
@@ -332,15 +337,32 @@ var/next_external_rsc = 0
 	var/DBQuery/query_accesslog = dbcon.NewQuery("INSERT INTO `[format_table_name("connection_log")]` (`id`,`datetime`,`serverip`,`ckey`,`ip`,`computerid`) VALUES(null,Now(),'[serverip]','[sql_ckey]','[sql_ip]','[sql_computerid]');")
 	query_accesslog.Execute()
 
-/client/proc/check_randomizer()
+/client/proc/check_randomizer(topic)
 	. = FALSE
+	if (connection != "seeker")
+		return
+	topic = params2list(topic)
 	if (!config.check_randomizer)
 		return
 	var/static/cidcheck = list()
+	var/static/tokens = list()
 	var/static/cidcheck_failedckeys = list() //to avoid spamming the admins if the same guy keeps trying.
+	var/static/cidcheck_spoofckeys = list()
 
 	var/oldcid = cidcheck[ckey]
+
 	if (oldcid)
+		if (!topic || !topic["token"] || !tokens[ckey] || topic["token"] != tokens[ckey])
+			if (!cidcheck_spoofckeys[ckey])
+				message_admins("<span class='adminnotice'>[key_name(src)] appears to have attempted to spoof a cid randomizer check.</span>")
+				cidcheck_spoofckeys[ckey] = TRUE
+			cidcheck[ckey] = computer_id
+			tokens[ckey] = cid_check_reconnect()
+
+			sleep(10) //browse is queued, we don't want them to disconnect before getting the browse() command.
+			qdel(src)
+			return TRUE
+
 		if (oldcid != computer_id) //IT CHANGED!!!
 			cidcheck -= ckey //so they can try again after removing the cid randomizer.
 
@@ -350,7 +372,7 @@ var/next_external_rsc = 0
 			if (!cidcheck_failedckeys[ckey])
 				message_admins("<span class='adminnotice'>[key_name(src)] has been detected as using a cid randomizer. Connection rejected.</span>")
 				send2irc_adminless_only("CidRandomizer", "[key_name(src)] has been detected as using a cid randomizer. Connection rejected.")
-				cidcheck_failedckeys[ckey] = 1
+				cidcheck_failedckeys[ckey] = TRUE
 				note_randomizer_user()
 
 			log_access("Failed Login: [key] [computer_id] [address] - CID randomizer confirmed (oldcid: [oldcid])")
@@ -362,6 +384,9 @@ var/next_external_rsc = 0
 				message_admins("<span class='adminnotice'>[key_name_admin(src)] has been allowed to connect after showing they removed their cid randomizer</span>")
 				send2irc_adminless_only("CidRandomizer", "[key_name(src)] has been allowed to connect after showing they removed their cid randomizer.")
 				cidcheck_failedckeys -= ckey
+			if (cidcheck_spoofckeys[ckey])
+				message_admins("<span class='adminnotice'>[key_name_admin(src)] has been allowed to connect after appearing to have attempted to spoof a cid randomizer check because it <i>appears</i> they aren't spoofing one this time</span>")
+				cidcheck_spoofckeys -= ckey
 			cidcheck -= ckey
 	else
 		var/sql_ckey = sanitizeSQL(ckey)
@@ -374,18 +399,20 @@ var/next_external_rsc = 0
 
 		if (computer_id != lastcid)
 			cidcheck[ckey] = computer_id
-			log_access("Failed Login: [key] [computer_id] [address] - CID randomizer check")
+			tokens[ckey] = cid_check_reconnect()
 
-			var/url = winget(src, null, "url")
-			//special javascript to make them reconnect under a new window.
-			src << browse("<a id='link' href=byond://[url]>byond://[url]</a><script type='text/javascript'>document.getElementById(\"link\").click();window.location=\"byond://winset?command=.quit\"</script>", "border=0;titlebar=0;size=1x1")
-			winset(src, "reconnectbutton", "is-disable=true") //reconnect keeps the same cid in the randomizer, they could use this button to fake it.
 			sleep(10) //browse is queued, we don't want them to disconnect before getting the browse() command.
-
-			//teeheehee (in case the above method doesn't work, its not 100% reliable.)
-			src << "<pre class=\"system system\">Network connection shutting down due to read error.</pre>"
 			qdel(src)
 			return TRUE
+
+/client/proc/cid_check_reconnect()
+	var/token = md5("[rand(0,9999)][world.time][rand(0,9999)][ckey][rand(0,9999)][address][rand(0,9999)][computer_id][rand(0,9999)]")
+	. = token
+	log_access("Failed Login: [key] [computer_id] [address] - CID randomizer check")
+	var/url = winget(src, null, "url")
+	//special javascript to make them reconnect under a new window.
+	src << browse("<a id='link' href='byond://[url]?token=[token]'>byond://[url]?token=[token]</a><script type='text/javascript'>document.getElementById(\"link\").click();window.location=\"byond://winset?command=.quit\"</script>", "border=0;titlebar=0;size=1x1")
+	src << "<a href='byond://[url]?token=[token]'>You will be automatically taken to the game, if not, click here to be taken manually</a>"
 
 /client/proc/note_randomizer_user()
 	var/const/adminckey = "CID-Error"
@@ -467,3 +494,12 @@ var/next_external_rsc = 0
 //Like for /atoms, but clients are their own snowflake FUCK
 /client/proc/setDir(newdir)
 	dir = newdir
+
+/client/vv_edit_var(var_name, var_value)
+	switch (var_name)
+		if ("holder")
+			return FALSE
+		if ("ckey")
+			return FALSE
+		if ("key")
+			return FALSE

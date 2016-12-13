@@ -116,7 +116,7 @@
 /obj/item/weapon/twohanded/offhand
 	name = "offhand"
 	icon_state = "offhand"
-	w_class = 5
+	w_class = WEIGHT_CLASS_HUGE
 	flags = ABSTRACT
 	resistance_flags = INDESTRUCTIBLE | LAVA_PROOF | FIRE_PROOF | UNACIDABLE | ACID_PROOF
 
@@ -129,7 +129,7 @@
 ///////////Two hand required objects///////////////
 //This is for objects that require two hands to even pick up
 /obj/item/weapon/twohanded/required/
-	w_class = 5
+	w_class = WEIGHT_CLASS_HUGE
 
 /obj/item/weapon/twohanded/required/attack_self()
 	return
@@ -167,7 +167,7 @@
 	desc = "Truly, the weapon of a madman. Who would think to fight fire with an axe?"
 	force = 5
 	throwforce = 15
-	w_class = 4
+	w_class = WEIGHT_CLASS_BULKY
 	slot_flags = SLOT_BACK
 	force_unwielded = 5
 	force_wielded = 24
@@ -187,12 +187,13 @@
 	user.visible_message("<span class='suicide'>[user] axes [user.p_them()]self from head to toe! It looks like [user.p_theyre()] trying to commit suicide!</span>")
 	return (BRUTELOSS)
 
-/obj/item/weapon/twohanded/fireaxe/afterattack(atom/A as mob|obj|turf|area, mob/user, proximity)
-	if(!proximity) return
+/obj/item/weapon/twohanded/fireaxe/afterattack(atom/A, mob/user, proximity)
+	if(!proximity)
+		return
 	if(wielded) //destroys windows and grilles in one hit
 		if(istype(A,/obj/structure/window))
 			var/obj/structure/window/W = A
-			W.take_damage(400, BRUTE, "melee", 0)
+			W.take_damage(200, BRUTE, "melee", 0)
 		else if(istype(A,/obj/structure/grille))
 			var/obj/structure/grille/G = A
 			G.take_damage(40, BRUTE, "melee", 0)
@@ -209,8 +210,8 @@
 	throwforce = 5
 	throw_speed = 3
 	throw_range = 5
-	w_class = 2
-	var/w_class_on = 4
+	w_class = WEIGHT_CLASS_SMALL
+	var/w_class_on = WEIGHT_CLASS_BULKY
 	force_unwielded = 3
 	force_wielded = 34
 	wieldsound = 'sound/weapons/saberon.ogg'
@@ -253,7 +254,7 @@
 		impale(user)
 		return
 	if((wielded) && prob(50))
-		addtimer(src, "jedi_spin", 0, TRUE, user)
+		addtimer(src, "jedi_spin", 0, TIMER_UNIQUE, user)
 
 /obj/item/weapon/twohanded/dualsaber/proc/jedi_spin(mob/living/user)
 	for(var/i in list(1,2,4,8,4,2,1,2,4,8,4,2))
@@ -320,7 +321,7 @@
 	playsound(loc, hitsound, get_clamped_volume(), 1, -1)
 	add_fingerprint(user)
 	// Light your candles while spinning around the room
-	addtimer(src, "jedi_spin", 0, TRUE, user)
+	addtimer(src, "jedi_spin", 0, TIMER_UNIQUE, user)
 
 /obj/item/weapon/twohanded/dualsaber/green/New()
 	item_color = "green"
@@ -346,7 +347,7 @@
 	name = "spear"
 	desc = "A haphazardly-constructed yet still deadly weapon of ancient design."
 	force = 10
-	w_class = 4
+	w_class = WEIGHT_CLASS_BULKY
 	slot_flags = SLOT_BACK
 	force_unwielded = 10
 	force_wielded = 18
@@ -420,7 +421,7 @@
 	flags = CONDUCT
 	force = 13
 	var/force_on = 21
-	w_class = 5
+	w_class = WEIGHT_CLASS_HUGE
 	throwforce = 13
 	throw_speed = 2
 	throw_range = 4
@@ -455,7 +456,7 @@
 		. = ..()
 
 /obj/item/weapon/twohanded/required/chainsaw/doomslayer
-	name = "OOOH BABY"
+	name = "THE GREAT COMMUNICATOR"
 	desc = "<span class='warning'>VRRRRRRR!!!</span>"
 	armour_penetration = 100
 	force_on = 30
@@ -499,7 +500,7 @@
 	desc = "A simple tool used for moving hay."
 	force = 7
 	throwforce = 15
-	w_class = 4
+	w_class = WEIGHT_CLASS_BULKY
 	force_unwielded = 7
 	force_wielded = 15
 	attack_verb = list("attacked", "impaled", "pierced")
@@ -569,7 +570,7 @@
 	throw_speed = 4
 	sharpness = IS_SHARP
 	attack_verb = list("cut", "sliced", "diced")
-	w_class = 4
+	w_class = WEIGHT_CLASS_BULKY
 	slot_flags = SLOT_BACK
 	hitsound = 'sound/weapons/bladeslice.ogg'
 
@@ -610,7 +611,7 @@
 	name = "bone spear"
 	desc = "A haphazardly-constructed yet still deadly weapon. The pinnacle of modern technology."
 	force = 11
-	w_class = 4
+	w_class = WEIGHT_CLASS_BULKY
 	slot_flags = SLOT_BACK
 	force_unwielded = 11
 	force_wielded = 20					//I have no idea how to balance

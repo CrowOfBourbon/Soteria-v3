@@ -8,11 +8,14 @@
 	return
 
 /obj/attackby(obj/item/I, mob/living/user, params)
-	return I.attack_obj(src, user)
+	if(unique_rename && istype(I, /obj/item/weapon/pen))
+		rewrite(user)
+	else
+		return I.attack_obj(src, user)
 
 /mob/living/attackby(obj/item/I, mob/user, params)
 	user.changeNext_move(CLICK_CD_MELEE)
-	if(user.a_intent == "harm" && stat == DEAD && butcher_results) //can we butcher it?
+	if(user.a_intent == INTENT_HARM && stat == DEAD && butcher_results) //can we butcher it?
 		var/sharpness = I.is_sharp()
 		if(sharpness)
 			user << "<span class='notice'>You begin to butcher [src]...</span>"
@@ -49,14 +52,12 @@
 	user.do_attack_animation(O)
 	O.attacked_by(src, user)
 
-
-
 /atom/movable/proc/attacked_by()
 	return
 
 /obj/attacked_by(obj/item/I, mob/living/user)
 	if(I.force)
-		visible_message("<span class='danger'>[user] has hit [src] with [I]!</span>", null, null, COMBAT_MESSAGE_RANGE, user)
+		visible_message("<span class='danger'>[user] has hit [src] with [I]!</span>", null, null, COMBAT_MESSAGE_RANGE)
 		//only witnesses close by and the victim see a hit message.
 	take_damage(I.force, I.damtype, "melee", 1)
 
@@ -105,6 +106,6 @@
 	if(user in viewers(src, null))
 		attack_message = "[user] has [message_verb] [src][message_hit_area] with [I]!"
 	visible_message("<span class='danger'>[attack_message]</span>", \
-		"<span class='userdanger'>[attack_message]</span>", null, COMBAT_MESSAGE_RANGE,user)
+		"<span class='userdanger'>[attack_message]</span>", null, COMBAT_MESSAGE_RANGE)
 	return 1
 

@@ -31,6 +31,7 @@
 	..()
 	ConsumeTile()
 	if(atmosblock)
+		CanAtmosPass = ATMOS_PASS_NO
 		air_update_turf(1)
 
 /obj/structure/blob/proc/creation_action() //When it's created by the overmind, do this.
@@ -62,9 +63,6 @@
 						result++
 		. -= result - 1
 
-/obj/structure/blob/CanAtmosPass(turf/T)
-	return !atmosblock
-
 /obj/structure/blob/BlockSuperconductivity()
 	return atmosblock
 
@@ -83,9 +81,9 @@
 
 /obj/structure/blob/update_icon() //Updates color based on overmind color if we have an overmind.
 	if(overmind)
-		color = overmind.blob_reagent_datum.color
+		add_atom_colour(overmind.blob_reagent_datum.color, FIXED_COLOUR_PRIORITY)
 	else
-		color = null
+		remove_atom_colour(FIXED_COLOUR_PRIORITY)
 
 /obj/structure/blob/process()
 	Life()
@@ -194,7 +192,7 @@
 			B.loc = T
 			B.update_icon()
 			if(B.overmind && expand_reaction)
-				B.overmind.blob_reagent_datum.expand_reaction(src, B, T)
+				B.overmind.blob_reagent_datum.expand_reaction(src, B, T, controller)
 			return B
 		else
 			blob_attack_animation(T, controller)
@@ -224,6 +222,9 @@
 	..()
 	if(overmind)
 		overmind.blob_reagent_datum.extinguish_reaction(src)
+
+/obj/structure/blob/hulk_damage()
+	return 15
 
 /obj/structure/blob/attackby(obj/item/I, mob/user, params)
 	if(istype(I, /obj/item/device/analyzer))

@@ -118,7 +118,7 @@
 	feedback_add_details("slime_cores_used","[type]")
 	var/turf/T = get_turf(holder.my_atom)
 	T.visible_message("<span class='danger'>The slime extract begins to vibrate violently !</span>")
-	addtimer(src, "chemical_mob_spawn", 50, FALSE, holder, 5, "Gold Slime")
+	addtimer(src, "chemical_mob_spawn", 50, TIMER_NORMAL, holder, 5, "Gold Slime")
 	spawn(60)
 	..()
 
@@ -133,7 +133,7 @@
 	feedback_add_details("slime_cores_used","[type]")
 	var/turf/T = get_turf(holder.my_atom)
 	T.visible_message("<span class='danger'>The slime extract begins to vibrate violently !</span>")
-	addtimer(src, "chemical_mob_spawn", 50, FALSE, holder, 3, "Lesser Gold Slime", "neutral")
+	addtimer(src, "chemical_mob_spawn", 50, TIMER_NORMAL, holder, 3, "Lesser Gold Slime", "neutral")
 	spawn(60)
 	..()
 
@@ -148,7 +148,7 @@
 	feedback_add_details("slime_cores_used","[type]")
 	var/turf/T = get_turf(holder.my_atom)
 	T.visible_message("<span class='danger'>The slime extract begins to vibrate adorably !</span>")
-	addtimer(src, "chemical_mob_spawn", 50, FALSE, holder, 1, "Friendly Gold Slime", "neutral")
+	addtimer(src, "chemical_mob_spawn", 50, TIMER_NORMAL, holder, 1, "Friendly Gold Slime", "neutral")
 	spawn(60)
 	..()
 
@@ -272,28 +272,6 @@
 
 
 //Dark Blue
-/datum/chemical_reaction/slime/slimefreeze
-	name = "Slime Freeze"
-	id = "m_freeze"
-	required_reagents = list("plasma" = 1)
-	required_container = /obj/item/slime_extract/darkblue
-	required_other = 1
-
-/datum/chemical_reaction/slime/slimefreeze/on_reaction(datum/reagents/holder)
-	feedback_add_details("slime_cores_used","[type]")
-	var/turf/T = get_turf(holder.my_atom)
-	T.visible_message("<span class='danger'>The slime extract begins to vibrate adorably!</span>")
-	addtimer(src, "freeze", 50, FALSE, holder)
-	spawn(60)
-	..()
-
-/datum/chemical_reaction/slime/slimefreeze/proc/freeze(datum/reagents/holder)
-	if(holder && holder.my_atom)
-		var/turf/open/T = get_turf(holder.my_atom)
-		if(istype(T))
-			T.atmos_spawn_air("freon=50;TEMP=120")
-
-
 
 /datum/chemical_reaction/slime/slimefireproof
 	name = "Slime Fireproof"
@@ -332,7 +310,7 @@
 	feedback_add_details("slime_cores_used","[type]")
 	var/turf/TU = get_turf(holder.my_atom)
 	TU.visible_message("<span class='danger'>The slime extract begins to vibrate adorably!</span>")
-	addtimer(src, "slime_burn", 50, FALSE, holder)
+	addtimer(src, "slime_burn", 50, TIMER_NORMAL, holder)
 	spawn(60)
 	..()
 
@@ -543,7 +521,7 @@
 	message_admins("Slime Explosion reaction started at <a href='?_src_=holder;adminplayerobservecoodjump=1;X=[T.x];Y=[T.y];Z=[T.z]'>[T.loc.name] (JMP)</a>. Last Fingerprint: [touch_msg]")
 	log_game("Slime Explosion reaction started at [T.loc.name] ([T.x],[T.y],[T.z]). Last Fingerprint: [lastkey ? lastkey : "N/A"].")
 	T.visible_message("<span class='danger'>The slime extract begins to vibrate violently !</span>")
-	addtimer(src, "boom", 50, FALSE, holder)
+	addtimer(src, "boom", 50, TIMER_NORMAL, holder)
 	spawn(60)
 	..()
 
@@ -591,6 +569,20 @@
 	var/obj/effect/golemrune/Z = new /obj/effect/golemrune
 	Z.loc = get_turf(holder.my_atom)
 	notify_ghosts("Golem rune created in [get_area(Z)].", 'sound/effects/ghost2.ogg', source = Z)
+	..()
+
+/datum/chemical_reaction/slime/slimegolem2
+	name = "Slime Golem 2"
+	id = "m_golem2"
+	required_reagents = list("iron" = 1)
+	required_container = /obj/item/slime_extract/adamantine
+	required_other = 1
+
+/datum/chemical_reaction/slime/slimegolem2/on_reaction(datum/reagents/holder)
+	feedback_add_details("slime_cores_used","[type]")
+	var/obj/item/golem_shell/artificial/Z = new /obj/item/golem_shell/artificial
+	Z.loc = get_turf(holder.my_atom)
+	notify_ghosts("Artificial golem shell created in [get_area(Z)].", 'sound/effects/ghost2.ogg', source = Z)
 	..()
 
 //Bluespace

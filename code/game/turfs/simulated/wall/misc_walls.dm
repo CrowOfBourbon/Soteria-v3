@@ -3,7 +3,6 @@
 	desc = "A cold metal wall engraved with indecipherable symbols. Studying them causes your head to pound."
 	icon = 'icons/turf/walls/cult_wall.dmi'
 	icon_state = "cult"
-	builtin_sheet = null
 	canSmoothWith = null
 
 /turf/closed/wall/mineral/cult/New()
@@ -21,11 +20,12 @@
 	return
 
 /turf/closed/wall/mineral/cult/ratvar_act()
-	..()
+	. = ..()
 	if(istype(src, /turf/closed/wall/mineral/cult)) //if we haven't changed type
 		var/previouscolor = color
 		color = "#FAE48C"
 		animate(src, color = previouscolor, time = 8)
+		addtimer(src, "update_atom_colour", 8)
 
 /turf/closed/wall/mineral/cult/artificer
 	name = "runed stone wall"
@@ -43,7 +43,8 @@
 	name = "clockwork wall"
 	desc = "A huge chunk of warm metal. The clanging of machinery emanates from within."
 	explosion_block = 2
-	sheet_type = /obj/item/stack/sheet/brass
+	hardness = 10
+	sheet_type = /obj/item/stack/tile/brass
 	var/obj/effect/clockwork/overlay/wall/realappearence
 	var/obj/structure/destructible/clockwork/cache/linkedcache
 
@@ -84,7 +85,7 @@
 			return 0
 		playsound(src, 'sound/items/Welder.ogg', 100, 1)
 		user.visible_message("<span class='notice'>[user] begins slowly breaking down [src]...</span>", "<span class='notice'>You begin painstakingly destroying [src]...</span>")
-		if(!do_after(user, 120 / WT.toolspeed, target = src))
+		if(!do_after(user, 120*WT.toolspeed, target = src))
 			return 0
 		if(!WT.remove_fuel(1, user))
 			return 0
@@ -93,16 +94,13 @@
 		return 1
 	return ..()
 
-/turf/closed/wall/clockwork/ratvar_act()
-	for(var/mob/M in src)
-		M.ratvar_act()
-
 /turf/closed/wall/clockwork/narsie_act()
 	..()
 	if(istype(src, /turf/closed/wall/clockwork)) //if we haven't changed type
 		var/previouscolor = color
 		color = "#960000"
 		animate(src, color = previouscolor, time = 8)
+		addtimer(src, "update_atom_colour", 8)
 
 /turf/closed/wall/clockwork/dismantle_wall(devastated=0, explode=0)
 	if(devastated)
@@ -151,14 +149,12 @@
 	name = "rusted wall"
 	desc = "A rusted metal wall."
 	icon = 'icons/turf/walls/rusty_wall.dmi'
-	icon_state = "arust"
 	hardness = 45
 
 /turf/closed/wall/r_wall/rust
 	name = "rusted reinforced wall"
 	desc = "A huge chunk of rusted reinforced metal."
 	icon = 'icons/turf/walls/rusty_reinforced_wall.dmi'
-	icon_state = "rrust"
 	hardness = 15
 
 

@@ -57,7 +57,7 @@ macro "default"
 		is-disabled = false
 	elem 
 		name = "INSERT"
-		command = "a-intent right"
+		command = "a-intent next"
 		is-disabled = false
 	elem 
 		name = "DELETE"
@@ -97,11 +97,11 @@ macro "default"
 		is-disabled = false
 	elem 
 		name = "CTRL+F"
-		command = "a-intent left"
+		command = "a-intent next"
 		is-disabled = false
 	elem 
 		name = "CTRL+G"
-		command = "a-intent right"
+		command = "a-intent next"
 		is-disabled = false
 	elem 
 		name = "CTRL+H"
@@ -193,23 +193,15 @@ macro "default"
 		is-disabled = false
 	elem 
 		name = "F7"
-		command = "Stealth-Mode"
+		command = "Toggle-Build-Mode-Self"
 		is-disabled = false
 	elem 
 		name = "F8"
-		command = "Toggle-Build-Mode-Self"
+		command = "Invisimin"
 		is-disabled = false
 	elem 
 		name = "F12"
 		command = "F12"
-		is-disabled = false
-	elem 
-		name = "SHIFT"
-		command = "toggle-walk-run"
-		is-disabled = false
-	elem 
-		name = "SHIFT+UP"
-		command = "toggle-walk-run"
 		is-disabled = false
 
 macro "hotkeys"
@@ -271,7 +263,7 @@ macro "hotkeys"
 		is-disabled = false
 	elem 
 		name = "INSERT"
-		command = "a-intent right"
+		command = "a-intent next"
 		is-disabled = false
 	elem 
 		name = "DELETE"
@@ -343,19 +335,19 @@ macro "hotkeys"
 		is-disabled = false
 	elem 
 		name = "F"
-		command = "a-intent left"
+		command = "a-intent next"
 		is-disabled = false
 	elem 
 		name = "CTRL+F"
-		command = "a-intent left"
+		command = "a-intent next"
 		is-disabled = false
 	elem 
 		name = "G"
-		command = "a-intent right"
+		command = "a-intent next"
 		is-disabled = false
 	elem 
 		name = "CTRL+G"
-		command = "a-intent right"
+		command = "a-intent next"
 		is-disabled = false
 	elem 
 		name = "H"
@@ -501,14 +493,6 @@ macro "hotkeys"
 		name = "F12"
 		command = "F12"
 		is-disabled = false
-	elem 
-		name = "SHIFT"
-		command = "toggle-walk-run"
-		is-disabled = false
-	elem 
-		name = "SHIFT+UP"
-		command = "toggle-walk-run"
-		is-disabled = false
 
 macro "robot-default"
 	elem 
@@ -565,7 +549,7 @@ macro "robot-default"
 		is-disabled = false
 	elem 
 		name = "INSERT"
-		command = "a-intent right"
+		command = "a-intent next"
 		is-disabled = false
 	elem 
 		name = "DELETE"
@@ -585,7 +569,7 @@ macro "robot-default"
 		is-disabled = false
 	elem 
 		name = "CTRL+4"
-		command = "a-intent left"
+		command = "a-intent next"
 		is-disabled = false
 	elem 
 		name = "CTRL+A+REP"
@@ -605,11 +589,11 @@ macro "robot-default"
 		is-disabled = false
 	elem 
 		name = "CTRL+F"
-		command = "a-intent left"
+		command = "a-intent next"
 		is-disabled = false
 	elem 
 		name = "CTRL+G"
-		command = "a-intent right"
+		command = "a-intent next"
 		is-disabled = false
 	elem 
 		name = "CTRL+Q"
@@ -755,7 +739,7 @@ macro "robot-hotkeys"
 		is-disabled = false
 	elem 
 		name = "INSERT"
-		command = "a-intent right"
+		command = "a-intent next"
 		is-disabled = false
 	elem 
 		name = "DELETE"
@@ -787,11 +771,11 @@ macro "robot-hotkeys"
 		is-disabled = false
 	elem 
 		name = "4"
-		command = "a-intent left"
+		command = "a-intent next"
 		is-disabled = false
 	elem 
 		name = "CTRL+4"
-		command = "a-intent left"
+		command = "a-intent next"
 		is-disabled = false
 	elem 
 		name = "A+REP"
@@ -827,19 +811,19 @@ macro "robot-hotkeys"
 		is-disabled = false
 	elem 
 		name = "F"
-		command = "a-intent left"
+		command = "a-intent next"
 		is-disabled = false
 	elem 
 		name = "CTRL+F"
-		command = "a-intent left"
+		command = "a-intent next"
 		is-disabled = false
 	elem 
 		name = "G"
-		command = "a-intent right"
+		command = "a-intent next"
 		is-disabled = false
 	elem 
 		name = "CTRL+G"
-		command = "a-intent right"
+		command = "a-intent next"
 		is-disabled = false
 	elem 
 		name = "Q"

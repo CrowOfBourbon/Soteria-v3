@@ -300,7 +300,7 @@
 					if ("albino")
 						N.skin_tone = "caucasian1"
 
-			if(MUTCOLORS in N.dna.species.specflags) //take current alien color and darken it slightly
+			if(MUTCOLORS in N.dna.species.species_traits) //take current alien color and darken it slightly
 				var/newcolor = ""
 				var/len = length(N.dna.features["mcolor"])
 				for(var/i=1, i<=len, i+=1)
@@ -343,7 +343,7 @@
 			N.skin_tone = "orange"
 			N.hair_style = "Spiky"
 			N.hair_color = "000"
-		if(MUTCOLORS in N.dna.species.specflags) //Aliens with custom colors simply get turned orange
+		if(MUTCOLORS in N.dna.species.species_traits) //Aliens with custom colors simply get turned orange
 			N.dna.features["mcolor"] = "f80"
 		N.regenerate_icons()
 		if(prob(7))
@@ -843,10 +843,12 @@
 		qdel(O)
 	else
 		if(O)
+			O.remove_atom_colour(WASHABLE_COLOUR_PRIORITY)
 			O.clean_blood()
 
 /datum/reagent/space_cleaner/reaction_turf(turf/T, reac_volume)
 	if(reac_volume >= 1)
+		T.remove_atom_colour(WASHABLE_COLOUR_PRIORITY)
 		T.clean_blood()
 		for(var/obj/effect/decal/cleanable/C in T)
 			qdel(C)
@@ -856,6 +858,7 @@
 
 /datum/reagent/space_cleaner/reaction_mob(mob/M, method=TOUCH, reac_volume)
 	if(method == TOUCH || method == VAPOR)
+		M.remove_atom_colour(WASHABLE_COLOUR_PRIORITY)
 		if(iscarbon(M))
 			var/mob/living/carbon/C = M
 			if(ishuman(M))
@@ -989,6 +992,23 @@
 /datum/reagent/carbondioxide/reaction_turf(turf/open/T, reac_volume)
 	if(istype(T))
 		T.atmos_spawn_air("co2=[reac_volume/5];TEMP=[T20C]")
+	return
+
+/datum/reagent/nitrous_oxide
+	name = "Nitrous Oxide"
+	id = "nitrous_oxide"
+	description = "A potent oxidizer used as fuel in rockets and as an anaesthetic during surgery."
+	reagent_state = LIQUID
+	color = "#808080"
+
+/datum/reagent/nitrous_oxide/reaction_obj(obj/O, reac_volume)
+	if((!O) || (!reac_volume))
+		return 0
+	O.atmos_spawn_air("n2o=[reac_volume/5];TEMP=[T20C]")
+
+/datum/reagent/nitrous_oxide/reaction_turf(turf/open/T, reac_volume)
+	if(istype(T))
+		T.atmos_spawn_air("n2o=[reac_volume/5];TEMP=[T20C]")
 	return
 
 
@@ -1180,23 +1200,23 @@
 
 /datum/reagent/colorful_reagent/on_mob_life(mob/living/M)
 	if(M && isliving(M))
-		M.color = pick(random_color_list)
+		M.add_atom_colour(pick(random_color_list), WASHABLE_COLOUR_PRIORITY)
 	..()
 	return
 
 /datum/reagent/colorful_reagent/reaction_mob(mob/living/M, reac_volume)
 	if(M && isliving(M))
-		M.color = pick(random_color_list)
+		M.add_atom_colour(pick(random_color_list), WASHABLE_COLOUR_PRIORITY)
 	..()
 
 /datum/reagent/colorful_reagent/reaction_obj(obj/O, reac_volume)
 	if(O)
-		O.color = pick(random_color_list)
+		O.add_atom_colour(pick(random_color_list), WASHABLE_COLOUR_PRIORITY)
 	..()
 
 /datum/reagent/colorful_reagent/reaction_turf(turf/T, reac_volume)
 	if(T)
-		T.color = pick(random_color_list)
+		T.add_atom_colour(pick(random_color_list), WASHABLE_COLOUR_PRIORITY)
 	..()
 
 /datum/reagent/hair_dye
@@ -1336,7 +1356,7 @@
 
 //Misc reagents
 
-datum/reagent/romerol
+/datum/reagent/romerol
 	name = "romerol"
 	// the REAL zombie powder
 	id = "romerol"
@@ -1362,14 +1382,22 @@ datum/reagent/romerol
 	var/current_size = 1
 
 /datum/reagent/growthserum/on_mob_life(mob/living/carbon/H)
-	if(volume >= 20 && current_size != 2)
-		H.resize = 2/current_size
-		current_size = 2
-		H.update_transform()
-	else if (current_size != 1.5)
-		H.resize = 1.5/current_size
-		current_size = 1.5
-		H.update_transform()
+	var/newsize = current_size
+	switch(volume)
+		if(0 to 19)
+			newsize = 1.5
+		if(20 to 49)
+			newsize = 2
+		if(50 to 99)
+			newsize = 2.5
+		if(100 to 199)
+			newsize = 3.5
+		if(200 to INFINITY)
+			newsize = 5
+		
+	H.resize = newsize/current_size
+	current_size = newsize
+	H.update_transform()
 	..()
 
 /datum/reagent/growthserum/on_mob_delete(mob/living/M)

@@ -19,9 +19,9 @@ var/global/list/parasites = list() //all currently existing/living guardians
 	icon_living = "magicOrange"
 	icon_dead = "magicOrange"
 	speed = 0
-	a_intent = "harm"
+	a_intent = INTENT_HARM
 	stop_automated_movement = 1
-	flying = 1 // Immunity to chasms and landmines, etc.
+	movement_type = FLYING // Immunity to chasms and landmines, etc.
 	attack_sound = 'sound/weapons/punch1.ogg'
 	atmos_requirements = list("min_oxy" = 0, "max_oxy" = 0, "min_tox" = 0, "max_tox" = 0, "min_co2" = 0, "max_co2" = 0, "min_n2" = 0, "max_n2" = 0)
 	minbodytemp = 0
@@ -101,7 +101,7 @@ var/global/list/parasites = list() //all currently existing/living guardians
 	bubble_icon = "[namedatum.bubbleicon]"
 
 	if (namedatum.stainself)
-		color = namedatum.colour
+		add_atom_colour(namedatum.colour, FIXED_COLOUR_PRIORITY)
 
 	//Special case holocarp, because #snowflake code
 	if(theme == "carp")

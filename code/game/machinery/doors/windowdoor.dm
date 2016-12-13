@@ -12,6 +12,7 @@
 	visible = 0
 	flags = ON_BORDER
 	opacity = 0
+	CanAtmosPass = ATMOS_PASS_PROC
 	var/obj/item/weapon/electronics/airlock/electronics = null
 	var/reinf = 0
 	var/shards = 2
@@ -179,7 +180,7 @@
 	qdel(src)
 
 /obj/machinery/door/window/narsie_act()
-	color = "#7D1919"
+	add_atom_colour("#7D1919", FIXED_COLOUR_PRIORITY)
 
 /obj/machinery/door/window/ratvar_act()
 	new/obj/machinery/door/window/clockwork(src.loc, dir)
@@ -225,7 +226,7 @@
 				playsound(src.loc, I.usesound, 100, 1)
 				user.visible_message("[user] removes the electronics from the [src.name].", \
 									 "<span class='notice'>You start to remove electronics from the [src.name]...</span>")
-				if(do_after(user,40/I.toolspeed, target = src))
+				if(do_after(user,40*I.toolspeed, target = src))
 					if(panel_open && !density && !operating && src.loc)
 						var/obj/structure/windoor_assembly/WA = new /obj/structure/windoor_assembly(src.loc)
 						switch(base_state)
@@ -300,7 +301,7 @@
 	explosion_block = 1
 
 /obj/machinery/door/window/clockwork
-	name = "clockwork door"
+	name = "brass windoor"
 	desc = "A thin door with translucent brass paneling."
 	icon_state = "clockwork"
 	base_state = "clockwork"
@@ -311,7 +312,8 @@
 
 /obj/machinery/door/window/clockwork/New(loc, set_dir)
 	..()
-	debris += new/obj/item/stack/sheet/brass(src, 2)
+	for(var/i in 1 to 2)
+		debris += new/obj/item/clockwork/alloy_shards/medium/gear_bit/large(src)
 	change_construction_value(2)
 
 /obj/machinery/door/window/clockwork/setDir(direct)
@@ -337,6 +339,7 @@
 		var/previouscolor = color
 		color = "#960000"
 		animate(src, color = previouscolor, time = 8)
+		addtimer(src, "update_atom_colour", 8)
 
 /obj/machinery/door/window/clockwork/allowed(mob/M)
 	if(is_servant_of_ratvar(M))

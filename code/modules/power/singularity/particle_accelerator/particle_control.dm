@@ -204,7 +204,7 @@
 
 /obj/machinery/particle_accelerator/control_box/proc/toggle_power()
 	active = !active
-	investigate_log("turned [active?"<font color='red'>ON</font>":"<font color='green'>OFF</font>"] by [usr ? key_name(usr) : "outside forces"]","singulo")
+	investigate_log("turned [active?"<font color='green'>ON</font>":"<font color='red'>OFF</font>"] by [usr ? key_name(usr) : "outside forces"]","singulo")
 	message_admins("PA Control Computer turned [active ?"ON":"OFF"] by [usr ? key_name_admin(usr) : "outside forces"](<A HREF='?_src_=holder;adminmoreinfo=\ref[usr]'>?</A>) (<A HREF='?_src_=holder;adminplayerobservefollow=\ref[usr]'>FLW</A>) in ([x],[y],[z] - <A HREF='?_src_=holder;adminplayerobservecoodjump=1;X=[x];Y=[y];Z=[z]'>JMP</a>)",0,1)
 	log_game("PA Control Computer turned [active ?"ON":"OFF"] by [usr ? "[key_name(usr)]" : "outside forces"] in ([x],[y],[z])")
 	if(active)
@@ -249,8 +249,6 @@
 		dat += "Particle Strength: [strength] "
 		dat += "<A href='?src=\ref[src];strengthdown=1'>--</A>|<A href='?src=\ref[src];strengthup=1'>++</A><BR><BR>"
 
-	//user << browse(dat, "window=pacontrol;size=420x500")
-	//onclose(user, "pacontrol")
 	var/datum/browser/popup = new(user, "pacontrol", name, 420, 300)
 	popup.set_content(dat)
 	popup.set_title_image(user.browse_rsc_icon(icon, icon_state))

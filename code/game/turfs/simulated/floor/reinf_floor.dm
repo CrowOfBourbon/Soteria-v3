@@ -26,13 +26,16 @@
 	if(istype(C, /obj/item/weapon/wrench))
 		user << "<span class='notice'>You begin removing rods...</span>"
 		playsound(src, 'sound/items/Ratchet.ogg', 80, 1)
-		if(do_after(user, 30/C.toolspeed, target = src))
+		if(do_after(user, 30*C.toolspeed, target = src))
 			if(!istype(src, /turf/open/floor/engine))
 				return
 			new /obj/item/stack/rods(src, 2)
 			ChangeTurf(/turf/open/floor/plating)
 			return
 
+/turf/open/floor/engine/acid_act(acidpwr, acid_volume)
+	acidpwr = min(acidpwr, 50) //we reduce the power so reinf floor never get melted.
+	. = ..()
 
 /turf/open/floor/engine/ex_act(severity, target)
 	contents_explosion(severity, target)
@@ -137,15 +140,15 @@
 	return
 
 /turf/open/floor/engine/cult/ratvar_act()
-	..()
+	. = ..()
 	if(istype(src, /turf/open/floor/engine/cult)) //if we haven't changed type
 		var/previouscolor = color
 		color = "#FAE48C"
 		animate(src, color = previouscolor, time = 8)
+		addtimer(src, "update_atom_colour", 8)
 
 /turf/open/floor/engine/cult/airless
 	initial_gas_mix = "TEMP=2.7"
-
 
 /turf/open/floor/engine/vacuum
 	name = "vacuum floor"

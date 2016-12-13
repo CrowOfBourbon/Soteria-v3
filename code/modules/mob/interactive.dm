@@ -411,9 +411,9 @@
 	var/mob/living/carbon/human/M = target
 	if(target)
 		if(health > 0)
-			if(M.a_intent == "help")
+			if(M.a_intent == INTENT_HELP)
 				chatter()
-			if(M.a_intent == "harm")
+			if(M.a_intent == INTENT_HARM)
 				retal = 1
 				retal_target = target
 
@@ -626,7 +626,7 @@
 
 	if(pulledby)
 		if(Adjacent(pulledby))
-			a_intent = "disarm"
+			a_intent = INTENT_DISARM
 			pulledby.attack_hand(src)
 			inactivity_period = 10
 
@@ -1469,7 +1469,7 @@
 	if(canmove)
 		if((graytide || (TRAITS & TRAIT_MEAN)) || retal)
 			interest += targetInterestShift
-			a_intent = "harm"
+			a_intent = INTENT_HARM
 			zone_selected = pick("chest","r_leg","l_leg","r_arm","l_arm","head")
 			doing |= FIGHTING
 			if(retal)
@@ -1547,8 +1547,8 @@
 						if(istype(main_hand,/obj/item/weapon/gun))
 							var/obj/item/weapon/gun/G = main_hand
 							if(G.can_trigger_gun(src))
-								if(istype(main_hand,/obj/item/weapon/gun/projectile))
-									var/obj/item/weapon/gun/projectile/P = main_hand
+								if(istype(main_hand,/obj/item/weapon/gun/ballistic))
+									var/obj/item/weapon/gun/ballistic/P = main_hand
 									if(!P.chambered)
 										P.chamber_round()
 										P.update_icon()
@@ -1589,7 +1589,7 @@
 						tryWalk(TARGET)
 					else
 						if(Adjacent(TARGET))
-							a_intent = pick("disarm","harm")
+							a_intent = pick(INTENT_DISARM, INTENT_HARM)
 							M.attack_hand(src)
 			timeout++
 		else if(timeout >= 10 || !(targetRange(M) > 14))

@@ -1,4 +1,4 @@
-//This file was auto-corrected by findeclaration.exe on 25.5.2012 20:42:31
+
 
 /*
  * A large number of misc global procs.
@@ -934,8 +934,8 @@ var/list/WALLITEMS_INVERSE = list(
 	tY = tY[1]
 	tX = splittext(tX[1], ":")
 	tX = tX[1]
-	tX = Clamp(origin.x + text2num(tX) - world.view + 1, 1, world.maxx)
-	tY = Clamp(origin.y + text2num(tY) - world.view + 1, 1, world.maxy)
+	tX = Clamp(origin.x + text2num(tX) - world.view - 1, 1, world.maxx)
+	tY = Clamp(origin.y + text2num(tY) - world.view - 1, 1, world.maxy)
 	return locate(tX, tY, tZ)
 
 /proc/screen_loc2turf(text, turf/origin)
@@ -1189,7 +1189,8 @@ B --><-- A
 	var/list/L = block(locate(T.x - range, T.y - range, T.z), locate(T.x + range, T.y + range, T.z))
 	for(var/B in L)
 		var/turf/C = B
-		C.proximity_checkers |= A
+		LAZYINITLIST(C.proximity_checkers)
+		C.proximity_checkers[A] = TRUE
 	return L
 
 /proc/remove_from_proximity_list(atom/A, range)
@@ -1197,7 +1198,11 @@ B --><-- A
 	var/list/L = block(locate(T.x - range, T.y - range, T.z), locate(T.x + range, T.y + range, T.z))
 	for(var/B in L)
 		var/turf/C = B
+		if (!C.proximity_checkers)
+			continue
 		C.proximity_checkers.Remove(A)
+		UNSETEMPTY(C.proximity_checkers)
+
 
 /proc/shift_proximity(atom/checker, atom/A, range, atom/B, newrange)
 	var/turf/T = get_turf(A)
@@ -1210,10 +1215,14 @@ B --><-- A
 	var/list/O = M - L
 	for(var/C in N)
 		var/turf/D = C
+		if (!D.proximity_checkers)
+			continue
 		D.proximity_checkers.Remove(checker)
+		UNSETEMPTY(D.proximity_checkers)
 	for(var/E in O)
 		var/turf/F = E
-		F.proximity_checkers |= checker
+		LAZYINITLIST(F.proximity_checkers)
+		F.proximity_checkers[checker] = TRUE
 	return 1
 
 /proc/flick_overlay_static(image/I, atom/A, duration)
@@ -1244,7 +1253,7 @@ B --><-- A
 		if(!istype(A, type))
 			continue
 		var/distance = get_dist(source, A)
-		if(!closest_distance)
+		if(!closest_atom)
 			closest_distance = distance
 			closest_atom = A
 		else
@@ -1253,9 +1262,14 @@ B --><-- A
 				closest_atom = A
 	return closest_atom
 
-proc/pick_closest_path(value)
-	var/list/matches = get_fancy_list_of_types()
-	if (!isnull(value) && value!="")
+
+proc/pick_closest_path(value, list/matches = get_fancy_list_of_atom_types())
+	if (value == FALSE) //nothing should be calling us with a number, so this is safe
+		value = input("Enter type to find (blank for all, cancel to cancel)", "Search for type") as null|text
+		if (isnull(value))
+			return
+	value = trim(value)
+	if(!isnull(value) && value != "")
 		matches = filter_fancy_list(matches, value)
 
 	if(matches.len==0)
@@ -1265,7 +1279,7 @@ proc/pick_closest_path(value)
 	if(matches.len==1)
 		chosen = matches[1]
 	else
-		chosen = input("Select an atom type", "Spawn Atom", matches[1]) as null|anything in matches
+		chosen = input("Select a type", "Pick Type", matches[1]) as null|anything in matches
 		if(!chosen)
 			return
 	chosen = matches[chosen]
@@ -1314,7 +1328,7 @@ proc/pick_closest_path(value)
 
 #define RANDOM_COLOUR (rgb(rand(0,255),rand(0,255),rand(0,255)))
 
-#define QDEL_IN(item, time) addtimer(GLOBAL_PROC, "qdel", time, FALSE, item)
+#define QDEL_IN(item, time) addtimer(GLOBAL_PROC, "qdel", time, TIMER_NORMAL, item)
 
 /proc/check_for_cleanbot_bug()
 	var/static/admins_warned //bet you didn't know you could do this!

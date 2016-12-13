@@ -19,6 +19,27 @@
 	//overlays that should remain on top and not normally be removed, like c4.
 	var/list/priority_overlays
 
+	var/list/atom_colours	 //used to store the different colors on an atom
+							//its inherent color, the colored paint applied on it, special color effect etc...
+
+
+/atom/New()
+	//atom creation method that preloads variables at creation
+	if(use_preloader && (src.type == _preloader.target_path))//in case the instanciated atom is creating other atoms in New()
+		_preloader.load(src)
+	//atom color stuff
+	if(color)
+		add_atom_colour(color, FIXED_COLOUR_PRIORITY)
+
+	//lighting stuff
+	if(opacity && isturf(loc))
+		loc.UpdateAffectingLights()
+
+	if(luminosity)
+		light = new(src)
+
+	//. = ..() //uncomment if you are dumb enough to add a /datum/New() proc
+
 /atom/Destroy()
 	if(alternate_appearances)
 		for(var/aakey in alternate_appearances)
@@ -32,6 +53,8 @@
 				AA.hide(list(src))
 	return ..()
 
+/atom/proc/CanPass(atom/movable/mover, turf/target, height=1.5)
+	return (!density || !height)
 
 /atom/proc/onCentcom()
 	var/turf/T = get_turf(src)
@@ -435,9 +458,87 @@ var/list/blood_splatter_icons = list()
 /atom/proc/setDir(newdir)
 	dir = newdir
 
-/atom/on_varedit(modified_var)
-	if(!Debug2)
-		admin_spawned = TRUE
-
 /atom/proc/mech_melee_attack(obj/mecha/M)
 	return
+
+
+
+/*
+	Atom Colour Priority System
+	A System that gives finer control over which atom colour to colour the atom with.
+	The "highest priority" one is always displayed as opposed to the default of
+	"whichever was set last is displayed"
+*/
+
+
+/*
+	Adds an instance of colour_type to the atom's atom_colours list
+*/
+/atom/proc/add_atom_colour(coloration, colour_priority)
+	if(!atom_colours || !atom_colours.len)
+		atom_colours = list()
+		atom_colours.len = COLOUR_PRIORITY_AMOUNT //four priority levels currently.
+	if(!coloration)
+		return
+	if(colour_priority > atom_colours.len)
+		return
+	atom_colours[colour_priority] = coloration
+	update_atom_colour()
+
+
+/*
+	Removes an instance of colour_type from the atom's atom_colours list
+*/
+/atom/proc/remove_atom_colour(colour_priority, coloration)
+	if(!atom_colours)
+		atom_colours = list()
+		atom_colours.len = COLOUR_PRIORITY_AMOUNT //four priority levels currently.
+	if(colour_priority > atom_colours.len)
+		return
+	if(coloration && atom_colours[colour_priority] != coloration)
+		return //if we don't have the expected color (for a specific priority) to remove, do nothing
+	atom_colours[colour_priority] = null
+	update_atom_colour()
+
+
+/*
+	Resets the atom's color to null, and then sets it to the highest priority
+	colour available
+*/
+/atom/proc/update_atom_colour()
+	if(!atom_colours)
+		atom_colours = list()
+		atom_colours.len = COLOUR_PRIORITY_AMOUNT //four priority levels currently.
+	color = null
+	for(var/C in atom_colours)
+		if(islist(C))
+			var/list/L = C
+			if(L.len)
+				color = L
+				return
+		else if(C)
+			color = C
+			return
+
+/atom/vv_edit_var(var_name, var_value)
+	if(!Debug2)
+		admin_spawned = TRUE
+	switch(var_name)
+		if("luminosity")
+			src.SetLuminosity(var_value)
+			return//prevent normal setting of this value
+	. = ..()
+	switch(var_name)
+		if("color")
+			add_atom_colour(color, ADMIN_COLOUR_PRIORITY)
+
+/atom/vv_get_dropdown()
+	. = ..()
+	. += "---"
+	var/turf/curturf = get_turf(src)
+	if (curturf)
+		.["Jump to"] = "?_src_=holder;adminplayerobservecoodjump=1;X=[curturf.x];Y=[curturf.y];Z=[curturf.z]"
+	.["Add reagent"] = "?_src_=vars;addreagent=\ref[src]"
+	.["Trigger EM pulse"] = "?_src_=vars;emp=\ref[src]"
+	.["Trigger explosion"] = "?_src_=vars;explode=\ref[src]"
+

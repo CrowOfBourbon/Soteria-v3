@@ -27,6 +27,7 @@
 #define EASTER					"Easter"
 #define HALLOWEEN				"Halloween"
 #define CHRISTMAS				"Christmas"
+#define FESTIVE_SEASON			"Festive Season"
 #define FRIDAY_13TH				"Friday the 13th"
 
 //Human Overlays Indexes/////////
@@ -46,9 +47,9 @@
 #define GLASSES_LAYER			13
 #define BELT_LAYER				12		//Possible make this an overlay of somethign required to wear a belt?
 #define SUIT_STORE_LAYER		11
-#define BACK_LAYER				10
-#define HAIR_LAYER				9		//TODO: make part of head layer?
-#define NECK_LAYER				8
+#define NECK_LAYER				10
+#define BACK_LAYER				9
+#define HAIR_LAYER				8		//TODO: make part of head layer?
 #define FACEMASK_LAYER			7
 #define HEAD_LAYER				6
 #define HANDCUFF_LAYER			5
@@ -426,12 +427,6 @@ var/global/list/ghost_others_options = list(GHOST_OTHERS_SIMPLE, GHOST_OTHERS_DE
 #define TRIGGER_GUARD_NONE 0
 #define TRIGGER_GUARD_NORMAL 1
 
-// Plant types
-#define PLANT_NORMAL 0
-#define PLANT_WEED 1
-#define PLANT_MUSHROOM 2
-#define PLANT_ALIEN 3
-
 // Maploader bounds indices
 #define MAP_MINX 1
 #define MAP_MINY 2
@@ -444,6 +439,9 @@ var/global/list/ghost_others_options = list(GHOST_OTHERS_SIMPLE, GHOST_OTHERS_DE
 
 // Evil narsie colour
 #define NARSIE_WINDOW_COLOUR "#7D1919"
+
+//let's just pretend fulltile windows being children of border windows is fine
+#define FULLTILE_WINDOW_DIR NORTHEAST
 
 // Defib stats
 #define DEFIB_TIME_LIMIT 120
@@ -499,6 +497,7 @@ var/global/list/ghost_others_options = list(GHOST_OTHERS_SIMPLE, GHOST_OTHERS_DE
 #define BUBBLEGUM_SCORE "Bubblegum Killed"
 #define DRAKE_SCORE "Drakes Killed"
 #define BIRD_SCORE "Hierophants Killed"
+#define SWARMER_BEACON_SCORE "Swarmer Beacons Killed"
 #define BOSS_SCORE "Bosses Killed"
 #define TENDRIL_CLEAR_SCORE "Tendrils Killed"
 
@@ -547,3 +546,76 @@ var/global/list/ghost_others_options = list(GHOST_OTHERS_SIMPLE, GHOST_OTHERS_DE
 #define ATTACK_EFFECT_BITE		"bite"
 #define ATTACK_EFFECT_MECHFIRE	"mech_fire"
 #define ATTACK_EFFECT_MECHTOXIN	"mech_toxin"
+#define ATTACK_EFFECT_BOOP "boop"	//Honk
+
+
+//different types of atom colorations
+#define ADMIN_COLOUR_PRIORITY 		1 //only used by rare effects like greentext coloring mobs and when admins varedit color
+#define TEMPORARY_COLOUR_PRIORITY 	2 //e.g. purple effect of the revenant on a mob, black effect when mob electrocuted
+#define WASHABLE_COLOUR_PRIORITY 	3 //color splashed onto an atom (e.g. paint on turf)
+#define FIXED_COLOUR_PRIORITY 		4 //color inherent to the atom (e.g. blob color)
+#define COLOUR_PRIORITY_AMOUNT 4 //how many priority levels there are.
+
+// w_class (weight class)
+#define WEIGHT_CLASS_TINY     1 // Usually items smaller then a human hand
+#define WEIGHT_CLASS_SMALL    2 // Pockets can hold small and tiny items
+#define WEIGHT_CLASS_NORMAL   3 // Standard backpacks can carry tiny, small & normal items
+#define WEIGHT_CLASS_BULKY    4 // Items that can be weilded or equipped but not stored in an inventory
+#define WEIGHT_CLASS_HUGE     5 // Usually represents objects that require two hands to operate
+#define WEIGHT_CLASS_GIGANTIC 6 // Essentially means it cannot be picked up or placed in an inventory
+
+// Examples of tiny items: Playing Cards, Lighter, Scalpel, Coins/Money
+// Examples of small items: Flashlight, Multitool, Grenades, GPS Device
+// Examples of normal items: Fire extinguisher, Stunbaton, Gas Mask, Metal Sheets
+// Examples of bulky items: Defibrillator, Backpack, Space Suits
+// Examples of huge items: Shotgun, Two Handed Melee Weapons
+// Examples of gigantic items: Mech Parts, Safe
+
+// m_intent
+#define MOVE_INTENT_WALK "walk"
+#define MOVE_INTENT_RUN  "run"
+
+//Endgame Results
+
+#define NUKE_NEAR_MISS 1
+#define NUKE_MISS_STATION 2
+#define NUKE_SYNDICATE_BASE 3
+#define STATION_DESTROYED_NUKE 4
+#define STATION_EVACUATED 5
+#define GANG_LOSS 6
+#define GANG_TAKEOVER 7
+#define BLOB_WIN 8
+#define BLOB_NUKE 9
+#define BLOB_DESTROYED 10
+#define CULT_ESCAPE 11
+#define CULT_FAILURE 12
+#define CULT_SUMMON 13
+#define NUKE_MISS 14
+#define OPERATIVES_KILLED 15
+#define OPERATIVE_SKIRMISH 16
+#define REVS_WIN 17
+#define REVS_LOSE 18
+#define WIZARD_KILLED 19
+#define STATION_NUKED 20
+#define CLOCK_SUMMON 21
+#define CLOCK_SILICONS 22
+#define CLOCK_PROSELYTIZATION 23
+
+//For SSTimer
+
+#define TIMER_NORMAL "normal"
+#define TIMER_UNIQUE "unique"
+
+// Ventcrawling
+#define VENTCRAWLER_NONE   0
+#define VENTCRAWLER_NUDE   1
+#define VENTCRAWLER_ALWAYS 2
+
+// Intent
+#define INTENT_HELP   "help"
+#define INTENT_GRAB   "grab"
+#define INTENT_DISARM "disarm"
+#define INTENT_HARM   "harm"
+// NOTE: This is not a real intent! It's used to allow
+// the alternate intent selection stlye (clockwise)
+#define INTENT_NEXT   "next"

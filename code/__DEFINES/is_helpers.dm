@@ -62,6 +62,8 @@
 //Simple animals
 #define isanimal(A) (istype(A, /mob/living/simple_animal))
 
+#define isborer(A) (istype(A, /mob/living/simple_animal/borer))
+
 #define isbot(A) (istype(A, /mob/living/simple_animal/bot))
 
 #define iscrab(A) (istype(A, /mob/living/simple_animal/crab))
@@ -111,6 +113,8 @@
 #define islimb(A) (istype(A, /obj/item/bodypart))
 
 #define is_cleanable(A) (istype(A, /obj/effect/decal/cleanable) || istype(A, /obj/effect/rune)) //if something is cleanable
+
+#define isorgan(A) (istype(A, /obj/item/organ))
 
 //Assemblies
 #define isassembly(O) (istype(O, /obj/item/device/assembly))

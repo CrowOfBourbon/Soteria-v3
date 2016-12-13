@@ -109,7 +109,7 @@
 		var/obj/effect/particle_effect/foam/F = PoolOrNew(src.type, T)
 		F.amount = amount
 		reagents.copy_to(F, (reagents.total_volume))
-		F.color = color
+		F.add_atom_colour(color, FIXED_COLOUR_PRIORITY)
 		F.metal = metal
 
 
@@ -168,7 +168,7 @@
 		var/obj/effect/particle_effect/foam/F = PoolOrNew(effect_type, location)
 		var/foamcolor = mix_color_from_reagents(chemholder.reagents.reagent_list)
 		chemholder.reagents.copy_to(F, chemholder.reagents.total_volume/amount)
-		F.color = foamcolor
+		F.add_atom_colour(foamcolor, FIXED_COLOUR_PRIORITY)
 		F.amount = amount
 		F.metal = metal
 
@@ -187,6 +187,7 @@
 	gender = PLURAL
 	obj_integrity = 20
 	max_integrity = 20
+	CanAtmosPass = ATMOS_PASS_DENSITY
 
 /obj/structure/foamedmetal/New()
 	..()
@@ -218,9 +219,6 @@
 /obj/structure/foamedmetal/CanPass(atom/movable/mover, turf/target, height=1.5)
 	return !density
 
-
-/obj/structure/foamedmetal/CanAtmosPass()
-	return !density
 /obj/structure/foamedmetal/iron
 	obj_integrity = 50
 	max_integrity = 50

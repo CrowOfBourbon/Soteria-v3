@@ -5,7 +5,7 @@
 	icon = 'icons/obj/hydroponics/equipment.dmi'
 	icon_state = "waterbackpack"
 	item_state = "waterbackpack"
-	w_class = 4
+	w_class = WEIGHT_CLASS_BULKY
 	slot_flags = SLOT_BACK
 	slowdown = 1
 	actions_types = list(/datum/action/item_action/toggle_mister)
@@ -109,7 +109,7 @@
 	icon = 'icons/obj/hydroponics/equipment.dmi'
 	icon_state = "mister"
 	item_state = "mister"
-	w_class = 4
+	w_class = WEIGHT_CLASS_BULKY
 	amount_per_transfer_from_this = 50
 	possible_transfer_amounts = list(25,50,100)
 	volume = 500
@@ -218,7 +218,7 @@
 	power = 8
 	precision = 1
 	cooling_power = 5
-	w_class = 5
+	w_class = WEIGHT_CLASS_HUGE
 	flags = NODROP //Necessary to ensure that the nozzle and tank never seperate
 	var/obj/item/weapon/watertank/tank
 	var/nozzle_mode = 0
@@ -226,12 +226,13 @@
 	var/nanofrost_cooldown = 0
 
 /obj/item/weapon/extinguisher/mini/nozzle/New(parent_tank)
+	..()
 	if(check_tank_exists(parent_tank, src))
 		tank = parent_tank
 		reagents = tank.reagents
 		max_water = tank.volume
 		loc = tank
-	return
+
 
 /obj/item/weapon/extinguisher/mini/nozzle/Move()
 	..()
@@ -320,7 +321,7 @@
 	S.set_up(2, src.loc, blasting=1)
 	S.start()
 	var/obj/effect/decal/cleanable/flour/F = new /obj/effect/decal/cleanable/flour(src.loc)
-	F.color = "#B2FFFF"
+	F.add_atom_colour("#B2FFFF", FIXED_COLOUR_PRIORITY)
 	F.name = "nanofrost residue"
 	F.desc = "Residue left behind from a nanofrost detonation. Perhaps there was a fire here?"
 	playsound(src,'sound/effects/bamf.ogg',100,1)
@@ -336,7 +337,7 @@
 	icon = 'icons/obj/hydroponics/equipment.dmi'
 	icon_state = "waterbackpackatmos"
 	item_state = "waterbackpackatmos"
-	w_class = 4
+	w_class = WEIGHT_CLASS_BULKY
 	slot_flags = SLOT_BACK
 	slowdown = 1
 	actions_types = list(/datum/action/item_action/activate_injector)
@@ -447,7 +448,7 @@
 	desc = "A New Russian backpack spray for systematic cleansing of carbon lifeforms."
 	icon_state = "waterbackpackjani"
 	item_state = "waterbackpackjani"
-	w_class = 3
+	w_class = WEIGHT_CLASS_NORMAL
 	volume = 2000
 	slowdown = 0
 
@@ -467,7 +468,7 @@
 	icon = 'icons/obj/hydroponics/equipment.dmi'
 	icon_state = "misterjani"
 	item_state = "misterjani"
-	w_class = 4
+	w_class = WEIGHT_CLASS_BULKY
 	amount_per_transfer_from_this = 100
 	possible_transfer_amounts = list(75,100,150)
 

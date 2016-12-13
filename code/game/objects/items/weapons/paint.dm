@@ -9,7 +9,7 @@
 	icon_state = "paint_neutral"
 	item_color = "FFFFFF"
 	item_state = "paintcan"
-	w_class = 3
+	w_class = WEIGHT_CLASS_NORMAL
 	resistance_flags = FLAMMABLE
 	obj_integrity = 100
 	max_integrity = 100
@@ -86,7 +86,8 @@
 		return
 	if(!istype(target) || isspaceturf(target))
 		return
-	target.color = "#" + item_color
+	var/newcolor = "#" + item_color
+	target.add_atom_colour(newcolor, WASHABLE_COLOUR_PRIORITY)
 
 /obj/item/weapon/paint/paint_remover
 	gender =  PLURAL
@@ -97,4 +98,4 @@
 	if(!proximity)
 		return
 	if(istype(target) && target.color != initial(target.color))
-		target.color = initial(target.color)
+		target.remove_atom_colour(WASHABLE_COLOUR_PRIORITY)

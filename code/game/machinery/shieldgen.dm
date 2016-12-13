@@ -9,6 +9,7 @@
 	resistance_flags = LAVA_PROOF | FIRE_PROOF | UNACIDABLE | ACID_PROOF
 	max_integrity = 200
 	obj_integrity = 200 //The shield can only take so much beating (prevents perma-prisons)
+	CanAtmosPass = ATMOS_PASS_DENSITY
 
 /obj/structure/emergency_shield/New()
 	src.setDir(pick(1,2,3,4))
@@ -29,9 +30,6 @@
 /obj/structure/emergency_shield/CanPass(atom/movable/mover, turf/target, height)
 	if(!height) return 0
 	else return ..()
-
-/obj/structure/emergency_shield/CanAtmosPass(turf/T)
-	return !density
 
 /obj/structure/emergency_shield/emp_act(severity)
 	switch(severity)
@@ -64,7 +62,7 @@
 /obj/structure/emergency_shield/invoker
 	name = "Invoker's Shield"
 	desc = "A weak shield summoned by cultists to protect them while they carry out delicate rituals"
-	color = "red"
+	color = "#FF0000"
 	obj_integrity = 20
 	max_integrity = 20
 	mouse_opacity = 0

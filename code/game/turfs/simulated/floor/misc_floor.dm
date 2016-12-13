@@ -120,7 +120,7 @@
 		var/swapdamage = FALSE
 		if(L.has_dna()) //if has_dna() is true they're at least carbon
 			var/mob/living/carbon/C = L
-			if(TOXINLOVER in C.dna.species.specflags)
+			if(TOXINLOVER in C.dna.species.species_traits)
 				swapdamage = TRUE
 		if(isanimal(L))
 			var/mob/living/simple_animal/A = L
@@ -135,22 +135,17 @@
 	if(istype(I, /obj/item/weapon/crowbar))
 		user.visible_message("<span class='notice'>[user] begins slowly prying up [src]...</span>", "<span class='notice'>You begin painstakingly prying up [src]...</span>")
 		playsound(src, 'sound/items/Crowbar.ogg', 20, 1)
-		if(!do_after(user, 70 / I.toolspeed, target = src))
+		if(!do_after(user, 70*I.toolspeed, target = src))
 			return 0
-		user.visible_message("<span class='notice'>[user] pries up [src]!</span>", "<span class='notice'>You pry up [src], destroying it!</span>")
+		user.visible_message("<span class='notice'>[user] pries up [src]!</span>", "<span class='notice'>You pry up [src]!</span>")
 		playsound(src, 'sound/items/Crowbar.ogg', 80, 1)
 		make_plating()
 		return 1
 	return ..()
 
 /turf/open/floor/clockwork/make_plating()
-	new/obj/item/clockwork/alloy_shards/small(src)
-	new/obj/item/clockwork/alloy_shards/medium(src)
+	PoolOrNew(/obj/item/stack/tile/brass, src)
 	return ..()
-
-/turf/open/floor/clockwork/ratvar_act()
-	for(var/mob/M in src)
-		M.ratvar_act()
 
 /turf/open/floor/clockwork/narsie_act()
 	..()
@@ -158,6 +153,7 @@
 		var/previouscolor = color
 		color = "#960000"
 		animate(src, color = previouscolor, time = 8)
+		addtimer(src, "update_atom_colour", 8)
 
 
 /turf/open/floor/bluespace
@@ -173,3 +169,49 @@
 	desc = "Time seems to flow very slowly around these tiles"
 	floor_tile = /obj/item/stack/tile/sepia
 
+
+
+// VINE FLOOR
+
+/turf/open/floor/vines
+	color = "#aa77aa"
+	icon_state = "vinefloor"
+	broken_states = list()
+
+
+//All of this shit is useless for vines
+
+/turf/open/floor/vines/attackby()
+	return
+
+/turf/open/floor/vines/burn_tile()
+	return
+
+/turf/open/floor/vines/break_tile()
+	return
+
+/turf/open/floor/vines/make_plating()
+	return
+
+/turf/open/floor/vines/break_tile_to_plating()
+	return
+
+/turf/open/floor/vines/ex_act(severity, target)
+	..()
+	if(severity < 3 || target == src)
+		ChangeTurf(src.baseturf)
+
+/turf/open/floor/vines/narsie_act()
+	if(prob(20))
+		ChangeTurf(src.baseturf) //nar sie eats this shit
+
+/turf/open/floor/vines/singularity_pull(S, current_size)
+	if(current_size >= STAGE_FIVE)
+		if(prob(50))
+			ChangeTurf(src.baseturf)
+
+/turf/open/floor/vines/ChangeTurf(turf/open/floor/T)
+	for(var/obj/structure/spacevine/SV in src)
+		qdel(SV)
+	. = ..()
+	UpdateAffectingLights()

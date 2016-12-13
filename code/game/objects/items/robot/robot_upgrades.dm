@@ -21,20 +21,6 @@
 		usr << "There's no mounting point for the module!"
 		return 1
 
-/obj/item/borg/upgrade/reset
-	name = "cyborg module reset board"
-	desc = "Used to reset a cyborg's module. Destroys any other upgrades applied to the cyborg."
-	icon_state = "cyborg_upgrade1"
-	require_module = 1
-
-/obj/item/borg/upgrade/reset/action(mob/living/silicon/robot/R)
-	if(..())
-		return
-
-	R.ResetModule()
-
-	return 1
-
 /obj/item/borg/upgrade/rename
 	name = "cyborg reclassification board"
 	desc = "Used to rename a cyborg."
@@ -145,14 +131,14 @@
 	if(..())
 		return
 
-	for(var/obj/item/weapon/pickaxe/drill/cyborg/D in R.module.modules)
-		qdel(D)
-	for(var/obj/item/weapon/shovel/S in R.module.modules)
-		qdel(S)
+	for(var/obj/item/weapon/pickaxe/drill/cyborg/D in R.module)
+		R.module.remove_module(D, TRUE)
+	for(var/obj/item/weapon/shovel/S in R.module)
+		R.module.remove_module(S, TRUE)
 
-	R.module.modules += new /obj/item/weapon/pickaxe/drill/cyborg/diamond(R.module)
-	R.module.rebuild()
-
+	var/obj/item/weapon/pickaxe/drill/cyborg/diamond/DD = new /obj/item/weapon/pickaxe/drill/cyborg/diamond(R.module)
+	R.module.basic_modules += DD
+	R.module.add_module(DD, FALSE, TRUE)
 	return 1
 
 /obj/item/borg/upgrade/soh
@@ -167,12 +153,12 @@
 	if(..())
 		return
 
-	for(var/obj/item/weapon/storage/bag/ore/cyborg/S in R.module.modules)
-		qdel(S)
+	for(var/obj/item/weapon/storage/bag/ore/cyborg/S in R.module)
+		R.module.remove_module(S, TRUE)
 
-	R.module.modules += new /obj/item/weapon/storage/bag/ore/holding(R.module)
-	R.module.rebuild()
-
+	var/obj/item/weapon/storage/bag/ore/holding/H = new /obj/item/weapon/storage/bag/ore/holding(R.module)
+	R.module.basic_modules += H
+	R.module.add_module(H, FALSE, TRUE)
 	return 1
 
 /obj/item/borg/upgrade/syndicate
@@ -219,6 +205,7 @@
 	var/on = 0
 	var/powercost = 10
 	var/mob/living/silicon/robot/cyborg
+	var/datum/action/toggle_action
 
 /obj/item/borg/upgrade/selfrepair/action(mob/living/silicon/robot/R)
 	if(..())
@@ -231,9 +218,18 @@
 
 	cyborg = R
 	icon_state = "selfrepair_off"
-	var/datum/action/A = new /datum/action/item_action/toggle(src)
-	A.Grant(R)
+	toggle_action = new /datum/action/item_action/toggle(src)
+	toggle_action.Grant(R)
 	return 1
+
+/obj/item/borg/uprgade/selfrepair/dropped()
+	addtimer(src, "check_dropped", 1)
+
+/obj/item/borg/upgrade/selfrepair/proc/check_dropped()
+	if(loc != cyborg)
+		toggle_action.Remove(cyborg)
+		cyborg = null
+		deactivate()
 
 /obj/item/borg/upgrade/selfrepair/ui_action_click()
 	on = !on

@@ -1,4 +1,4 @@
-//This file was auto-corrected by findeclaration.exe on 25.5.2012 20:42:32
+
 
 //TODO: Make these simple_animals
 
@@ -14,7 +14,7 @@ var/const/MAX_ACTIVE_TIME = 400
 	icon = 'icons/mob/alien.dmi'
 	icon_state = "facehugger"
 	item_state = "facehugger"
-	w_class = 1 //note: can be picked up by aliens unlike most other items of w_class below 4
+	w_class = WEIGHT_CLASS_TINY //note: can be picked up by aliens unlike most other items of w_class below 4
 	flags = MASKINTERNALS
 	throw_range = 5
 	tint = 3
@@ -32,6 +32,16 @@ var/const/MAX_ACTIVE_TIME = 400
 /obj/item/clothing/mask/facehugger/lamarr
 	name = "Lamarr"
 	sterile = 1
+
+/obj/item/clothing/mask/facehugger/dead
+	icon_state = "facehugger_dead"
+	item_state = "facehugger_inactive"
+	stat = DEAD
+
+/obj/item/clothing/mask/facehugger/impregnated
+	icon_state = "facehugger_impregnated"
+	item_state = "facehugger_impregnated"
+	stat = DEAD
 
 /obj/item/clothing/mask/facehugger/attack_alien(mob/user) //can be picked up by aliens
 	attack_hand(user)
@@ -109,7 +119,11 @@ var/const/MAX_ACTIVE_TIME = 400
 /obj/item/clothing/mask/facehugger/proc/Attach(mob/living/M)
 	if(!isliving(M))
 		return 0
-	if((!iscorgi(M) && !iscarbon(M)) || isalien(M))
+	var/Corgi = iscorgi(M)
+	if((!Corgi && !iscarbon(M)) || isalien(M))
+		return 0
+	var/mob/living/carbon/Carb = M
+	if(!Corgi && !Carb.head)
 		return 0
 	if(attached)
 		return 0

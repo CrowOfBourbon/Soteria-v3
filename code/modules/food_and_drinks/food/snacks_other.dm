@@ -418,3 +418,9 @@
 	icon_state = "taco_plain"
 	bonus_reagents = list("nutriment" = 2, "vitamin" = 2)
 	list_reagents = list("nutriment" = 3, "vitamin" = 1)
+
+/obj/item/weapon/reagent_containers/food/snacks/pineappleslice
+	name = "pineapple slice"
+	desc = "A slice of pineapple."
+	icon_state = "pineappleslice"
+	filling_color = "#DFFF14"

@@ -77,3 +77,15 @@
 	)
 	result = /obj/item/weapon/reagent_containers/food/snacks/pizza/sassysage
 	category = CAT_PIZZA
+
+/datum/crafting_recipe/food/hawaiianpizza
+	name = "Hawaiian pizza"
+	reqs = list(
+		/obj/item/weapon/reagent_containers/food/snacks/pizzabread = 1,
+		/obj/item/weapon/reagent_containers/food/snacks/meat/cutlet = 1,
+		/obj/item/weapon/reagent_containers/food/snacks/cheesewedge = 2,
+		/obj/item/weapon/reagent_containers/food/snacks/pineappleslice = 3,
+		/obj/item/weapon/reagent_containers/food/snacks/grown/tomato = 1
+	)
+	result = /obj/item/weapon/reagent_containers/food/snacks/pizza/hawaiian
+	category = CAT_PIZZA

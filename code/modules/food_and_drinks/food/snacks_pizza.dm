@@ -112,3 +112,16 @@
 	name = "pizza slice"
 	icon_state = "pizzamargheritaslice"
 	filling_color = "#FFFFFF"
+
+/obj/item/weapon/reagent_containers/food/snacks/pizza/hawaiian
+	name = "hawaiian"
+	desc = "Pizza with pineapple on it."
+	icon_state = "pizzahawaiian"
+	slice_path = /obj/item/weapon/reagent_containers/food/snacks/pizzaslice/hawaiian
+	bonus_reagents = list("nutriment" = 5, "vitamin" = 5)
+
+/obj/item/weapon/reagent_containers/food/snacks/pizzaslice/hawaiian
+	name = "hawaiian pizza slice"
+	desc = "A slice of pizza with pineapple on it."
+	icon_state = "pizzahawaiianslice"
+	filling_color = "#FFA500"
